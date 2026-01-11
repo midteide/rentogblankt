@@ -210,7 +210,17 @@ if (accessibilityLink) {
 }
 
 // Set current year in copyright
-const currentYearElement = document.getElementById("current-year");
-if (currentYearElement) {
-	currentYearElement.textContent = new Date().getFullYear();
+function setCurrentYear() {
+	const currentYearElement = document.getElementById("current-year");
+	if (currentYearElement) {
+		currentYearElement.textContent = new Date().getFullYear();
+	}
+}
+
+// Run when DOM is ready
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', setCurrentYear);
+} else {
+	// DOM is already loaded
+	setCurrentYear();
 }
