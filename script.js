@@ -86,7 +86,8 @@ if (contactForm) {
 						email: email,
 						phone: phone || "Ikke oppgitt",
 						message: message,
-						to_email: "kontakt@rentogblankt.no",
+						to_email: "kontakt@rentogblankt.no", // Use {{to_email}} in template if you want dynamic recipient
+						reply_to: email, // Reply-to address (the person who filled the form)
 					},
 				);
 				emailSent = true;
