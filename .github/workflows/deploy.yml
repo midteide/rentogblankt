@@ -1,0 +1,74 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Validate HTML/CSS/JS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate HTML
+        run: |
+          echo "Checking HTML files..."
+          find . -name "*.html" -type f | while read file; do
+            echo "Validating $file"
+            # Basic HTML validation - check for common issues
+            if ! grep -q "<!DOCTYPE html>" "$file"; then
+              echo "Warning: $file might be missing DOCTYPE"
+            fi
+          done
+
+      - name: Check for broken links
+        run: |
+          echo "Checking for common issues..."
+          # Check that CSS and JS files exist
+          if [ ! -f "styles.css" ]; then
+            echo "Error: styles.css not found"
+            exit 1
+          fi
+          if [ ! -f "script.js" ]; then
+            echo "Error: script.js not found"
+            exit 1
+          fi
+          if [ ! -f "logo.svg" ]; then
+            echo "Warning: logo.svg not found"
+          fi
+
+      - name: Validate file structure
+        run: |
+          echo "Validating required files..."
+          required_files=("index.html" "styles.css" "script.js" "netlify.toml")
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Error: Required file $file is missing"
+              exit 1
+            fi
+          done
+          echo "✓ All required files present"
+
+  deploy:
+    name: Deploy to Netlify
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        with:
+          args: deploy --prod --dir=.
+          secrets: inherit

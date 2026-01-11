@@ -1,0 +1,58 @@
+name: Lint and Format Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Check code quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check HTML formatting
+        run: |
+          echo "Checking HTML files for basic issues..."
+          # Check for unclosed tags (basic check)
+          html_files=$(find . -name "*.html" -type f)
+          for file in $html_files; do
+            open_tags=$(grep -o '<[^/>]*>' "$file" | grep -v '<!' | wc -l)
+            close_tags=$(grep -o '</[^>]*>' "$file" | wc -l)
+            if [ "$open_tags" -ne "$close_tags" ]; then
+              echo "Warning: Possible unclosed tags in $file"
+            fi
+          done
+
+      - name: Check CSS syntax
+        run: |
+          echo "Checking CSS file..."
+          if [ -f "styles.css" ]; then
+            # Basic CSS validation - check for unclosed braces
+            open_braces=$(grep -o '{' styles.css | wc -l)
+            close_braces=$(grep -o '}' styles.css | wc -l)
+            if [ "$open_braces" -ne "$close_braces" ]; then
+              echo "Error: Unmatched braces in styles.css"
+              exit 1
+            fi
+            echo "✓ CSS syntax looks good"
+          fi
+
+      - name: Check JavaScript syntax
+        run: |
+          echo "Checking JavaScript file..."
+          if [ -f "script.js" ]; then
+            # Basic JS validation - check for unclosed braces
+            open_braces=$(grep -o '{' script.js | wc -l)
+            close_braces=$(grep -o '}' script.js | wc -l)
+            if [ "$open_braces" -ne "$close_braces" ]; then
+              echo "Error: Unmatched braces in script.js"
+              exit 1
+            fi
+            echo "✓ JavaScript syntax looks good"
+          fi
