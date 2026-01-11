@@ -33,26 +33,53 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Contact Form Handling
+// Contact Form Handling with Netlify Forms
 const contactForm = document.getElementById('contactForm');
+const formStatus = document.getElementById('form-status');
+
 if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Get form data
-        const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            message: document.getElementById('message').value
-        };
-
-        // Here you would typically send the data to a server
-        // For now, we'll just show a success message
-        alert('Takk for din henvendelse! Vi tar kontakt med deg så snart som mulig.');
+        // Disable submit button
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sender...';
+        formStatus.textContent = '';
+        formStatus.className = 'form-status';
         
-        // Reset form
-        contactForm.reset();
+        // Get form data
+        const formData = new FormData(contactForm);
+        
+        try {
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            });
+            
+            if (response.ok) {
+                // Success
+                formStatus.textContent = '✓ Takk for din henvendelse! Vi tar kontakt med deg så snart som mulig.';
+                formStatus.className = 'form-status success';
+                contactForm.reset();
+                
+                // Scroll to status message
+                formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+            // Error
+            formStatus.textContent = '✗ Noe gikk galt. Vennligst prøv igjen eller kontakt oss direkte på e-post.';
+            formStatus.className = 'form-status error';
+            console.error('Form submission error:', error);
+        } finally {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
     });
 }
 
