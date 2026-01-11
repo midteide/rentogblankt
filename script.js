@@ -33,9 +33,21 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Contact Form Handling with Netlify Forms
+// Contact Form Handling - Dual method: EmailJS (primary) + Netlify Forms (backup)
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('form-status');
+
+// EmailJS configuration - UPDATE THESE VALUES after setting up EmailJS
+const EMAILJS_CONFIG = {
+    serviceId: 'YOUR_SERVICE_ID',      // Replace with your EmailJS service ID
+    templateId: 'YOUR_TEMPLATE_ID',    // Replace with your EmailJS template ID
+    publicKey: 'YOUR_PUBLIC_KEY'       // Replace with your EmailJS public key
+};
+
+// Initialize EmailJS if available
+if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_CONFIG.publicKey);
+}
 
 if (contactForm) {
     contactForm.addEventListener('submit', async function(e) {
@@ -50,53 +62,72 @@ if (contactForm) {
         formStatus.className = 'form-status';
         
         // Get form data
-        const formData = new FormData(contactForm);
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const message = document.getElementById('message').value;
         
-        try {
-            // Encode form data properly for Netlify
-            const encoded = new URLSearchParams(formData).toString();
-            
-            const response = await fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: encoded
-            });
-            
-            // Check if response is a redirect (Netlify Forms returns 200 with redirect)
-            if (response.ok || response.redirected) {
-                // Success - Netlify Forms returns 200 OK
-                formStatus.textContent = '✓ Takk for din henvendelse! Vi tar kontakt med deg så snart som mulig.';
-                formStatus.className = 'form-status success';
-                contactForm.reset();
-                
-                // Scroll to status message
-                formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                
-                // Log success for debugging
-                console.log('Form submitted successfully to Netlify Forms');
-            } else {
-                // Try to get error details
-                const errorText = await response.text();
-                console.error('Form submission failed:', response.status, errorText);
-                throw new Error(`Server returned ${response.status}: ${errorText}`);
+        let emailSent = false;
+        
+        // Try EmailJS first (more reliable)
+        if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.serviceId !== 'YOUR_SERVICE_ID') {
+            try {
+                await emailjs.send(
+                    EMAILJS_CONFIG.serviceId,
+                    EMAILJS_CONFIG.templateId,
+                    {
+                        name: name,
+                        email: email,
+                        phone: phone || 'Ikke oppgitt',
+                        message: message,
+                        to_email: 'kontakt@rentogblankt.no'
+                    }
+                );
+                emailSent = true;
+                console.log('Email sent successfully via EmailJS');
+            } catch (error) {
+                console.error('EmailJS error:', error);
+                // Fall through to Netlify Forms
             }
-        } catch (error) {
-            // Error
-            console.error('Form submission error:', error);
-            formStatus.textContent = '✗ Noe gikk galt ved sending. Skjemaet er mottatt, men sjekk at e-post-notifikasjoner er satt opp i Netlify Dashboard. Du kan også kontakte oss direkte på kontakt@rentogblankt.no';
-            formStatus.className = 'form-status error';
-            
-            // Still show success message since form might have been submitted
-            // but email notifications might not be configured
-            setTimeout(() => {
-                formStatus.textContent = '💡 Tips: Sjekk Netlify Dashboard → Forms → Submissions for å se om skjemaet ble mottatt. Husk å sette opp e-post-notifikasjoner!';
-                formStatus.className = 'form-status';
-            }, 5000);
-        } finally {
-            // Re-enable submit button
-            submitButton.disabled = false;
-            submitButton.textContent = originalButtonText;
         }
+        
+        // Fallback to Netlify Forms if EmailJS not configured or failed
+        if (!emailSent) {
+            try {
+                const formData = new FormData(contactForm);
+                const encoded = new URLSearchParams(formData).toString();
+                
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: encoded
+                });
+                
+                if (response.ok || response.redirected) {
+                    emailSent = true;
+                    console.log('Form submitted to Netlify Forms');
+                } else {
+                    throw new Error('Netlify Forms submission failed');
+                }
+            } catch (error) {
+                console.error('Netlify Forms error:', error);
+            }
+        }
+        
+        // Show result
+        if (emailSent) {
+            formStatus.textContent = '✓ Takk for din henvendelse! Vi tar kontakt med deg så snart som mulig.';
+            formStatus.className = 'form-status success';
+            contactForm.reset();
+            formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            formStatus.textContent = '✗ Noe gikk galt ved sending. Vennligst kontakt oss direkte på kontakt@rentogblankt.no eller telefon.';
+            formStatus.className = 'form-status error';
+        }
+        
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
     });
 }
 
