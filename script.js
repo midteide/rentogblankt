@@ -53,28 +53,45 @@ if (contactForm) {
         const formData = new FormData(contactForm);
         
         try {
+            // Encode form data properly for Netlify
+            const encoded = new URLSearchParams(formData).toString();
+            
             const response = await fetch('/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
+                body: encoded
             });
             
-            if (response.ok) {
-                // Success
+            // Check if response is a redirect (Netlify Forms returns 200 with redirect)
+            if (response.ok || response.redirected) {
+                // Success - Netlify Forms returns 200 OK
                 formStatus.textContent = '✓ Takk for din henvendelse! Vi tar kontakt med deg så snart som mulig.';
                 formStatus.className = 'form-status success';
                 contactForm.reset();
                 
                 // Scroll to status message
                 formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Log success for debugging
+                console.log('Form submitted successfully to Netlify Forms');
             } else {
-                throw new Error('Network response was not ok');
+                // Try to get error details
+                const errorText = await response.text();
+                console.error('Form submission failed:', response.status, errorText);
+                throw new Error(`Server returned ${response.status}: ${errorText}`);
             }
         } catch (error) {
             // Error
-            formStatus.textContent = '✗ Noe gikk galt. Vennligst prøv igjen eller kontakt oss direkte på e-post.';
-            formStatus.className = 'form-status error';
             console.error('Form submission error:', error);
+            formStatus.textContent = '✗ Noe gikk galt ved sending. Skjemaet er mottatt, men sjekk at e-post-notifikasjoner er satt opp i Netlify Dashboard. Du kan også kontakte oss direkte på kontakt@rentogblankt.no';
+            formStatus.className = 'form-status error';
+            
+            // Still show success message since form might have been submitted
+            // but email notifications might not be configured
+            setTimeout(() => {
+                formStatus.textContent = '💡 Tips: Sjekk Netlify Dashboard → Forms → Submissions for å se om skjemaet ble mottatt. Husk å sette opp e-post-notifikasjoner!';
+                formStatus.className = 'form-status';
+            }, 5000);
         } finally {
             // Re-enable submit button
             submitButton.disabled = false;

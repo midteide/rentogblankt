@@ -1,5 +1,7 @@
 # 📧 Kontaktskjema Setup Guide
 
+> **⚠️ VIKTIG:** Hvis du ikke får e-post, se den detaljerte guiden: [NETLIFY_EMAIL_SETUP.md](./NETLIFY_EMAIL_SETUP.md)
+
 ## Netlify Forms er nå aktivert!
 
 Kontaktskjemaet er nå konfigurert til å bruke Netlify Forms, som automatisk sender e-post når noen sender inn skjemaet.

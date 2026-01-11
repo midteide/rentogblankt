@@ -601,6 +601,18 @@ html {
         height: 50px;
     }
 
+    .footer-legal-content {
+        padding: 0 1rem;
+    }
+
+    .legal-info {
+        font-size: 0.9rem;
+    }
+
+    .footer-links {
+        font-size: 0.9rem;
+    }
+
     .hero-title {
         font-size: 2rem;
     }
