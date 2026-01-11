@@ -129,3 +129,21 @@ document.querySelectorAll('.contact-item').forEach(item => {
     item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(item);
 });
+
+// Footer links handling
+const cookieLink = document.getElementById('cookie-link');
+const accessibilityLink = document.getElementById('accessibility-link');
+
+if (cookieLink) {
+    cookieLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Informasjonskapsler: Denne nettsiden bruker kun nødvendige informasjonskapsler for å fungere. Vi bruker ikke sporing eller markedsførings-informasjonskapsler.');
+    });
+}
+
+if (accessibilityLink) {
+    accessibilityLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Tilgjengelighet: Vi jobber kontinuerlig med å forbedre tilgjengeligheten på vår nettside. Hvis du opplever problemer med tilgjengelighet, vennligst kontakt oss på kontakt@rentogblankt.no');
+    });
+}
