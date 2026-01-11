@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0066cc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00a8e8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon: Clean/Sparkle symbol -->
+  <g transform="translate(10, 20)">
+    <!-- Main circle/star shape representing cleanliness -->
+    <circle cx="40" cy="40" r="35" fill="url(#gradient)" opacity="0.1"/>
+    <circle cx="40" cy="40" r="28" fill="none" stroke="url(#gradient)" stroke-width="2"/>
+    
+    <!-- Sparkle/star in center -->
+    <path d="M 40 20 L 42 32 L 54 30 L 44 38 L 50 48 L 40 42 L 30 48 L 36 38 L 26 30 L 38 32 Z" 
+          fill="url(#gradient)" stroke="url(#gradient)" stroke-width="0.5"/>
+    
+    <!-- Small decorative dots -->
+    <circle cx="25" cy="25" r="2" fill="url(#gradient)"/>
+    <circle cx="55" cy="25" r="2" fill="url(#gradient)"/>
+    <circle cx="25" cy="55" r="2" fill="url(#gradient)"/>
+    <circle cx="55" cy="55" r="2" fill="url(#gradient)"/>
+  </g>
+  
+  <!-- Company name text -->
+  <text x="100" y="45" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700" fill="url(#gradient)">
+    Rent &amp; Blankt
+  </text>
+  <text x="100" y="70" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#666666">
+    AS
+  </text>
+  
+  <!-- Decorative line under text -->
+  <line x1="100" y1="80" x2="380" y2="80" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round"/>
+</svg>

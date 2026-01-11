@@ -48,11 +48,20 @@ body {
     padding: 1rem 0;
 }
 
-.logo h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin: 0;
+.logo-link {
+    display: inline-block;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.logo-link:hover {
+    transform: scale(1.05);
+}
+
+.logo-img {
+    height: 50px;
+    width: auto;
+    display: block;
 }
 
 .nav-menu {
@@ -400,6 +409,14 @@ section {
     margin-bottom: 2rem;
 }
 
+.footer-logo {
+    height: 60px;
+    width: auto;
+    margin-bottom: 1rem;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+}
+
 .footer-section h3,
 .footer-section h4 {
     margin-bottom: 1rem;
@@ -455,6 +472,10 @@ html {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .logo-img {
+        height: 40px;
+    }
+
     .nav-menu {
         position: fixed;
         left: -100%;
@@ -479,6 +500,10 @@ html {
 
     .mobile-menu-toggle {
         display: flex;
+    }
+
+    .footer-logo {
+        height: 50px;
     }
 
     .hero-title {
