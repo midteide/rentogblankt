@@ -208,3 +208,9 @@ if (accessibilityLink) {
 		);
 	});
 }
+
+// Set current year in copyright
+const currentYearElement = document.getElementById("current-year");
+if (currentYearElement) {
+	currentYearElement.textContent = new Date().getFullYear();
+}
