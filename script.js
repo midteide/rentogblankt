@@ -72,7 +72,10 @@ if (contactForm) {
 		// Try EmailJS first (more reliable)
 		if (
 			typeof emailjs !== "undefined" &&
-			EMAILJS_CONFIG.serviceId !== "YOUR_SERVICE_ID"
+			EMAILJS_CONFIG.serviceId &&
+			EMAILJS_CONFIG.serviceId !== "YOUR_SERVICE_ID" &&
+			EMAILJS_CONFIG.templateId &&
+			EMAILJS_CONFIG.publicKey
 		) {
 			try {
 				await emailjs.send(
